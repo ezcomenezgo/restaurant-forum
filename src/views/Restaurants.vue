@@ -2,6 +2,7 @@
   <div class="container py-5">
     <NavTabs />
     <!-- restaurantsNavPills -->
+    <RestaurantsNavPills :categories="categories" />
     <h1 class="mt-5">首頁 - 餐廳列表</h1>
     <div class="row">
       <!-- restaurantsCard -->
@@ -19,6 +20,7 @@
 <script>
 import NavTabs from "../components/NavTabs";
 import RestaurantCard from "../components/RestaurantCard";
+import RestaurantsNavPills from "../components/RestaurantsNavPills";
 
 const dummyData = {
   restaurants: [
@@ -271,6 +273,7 @@ export default {
   components: {
     NavTabs,
     RestaurantCard,
+    RestaurantsNavPills,
   },
   data() {
     return {
