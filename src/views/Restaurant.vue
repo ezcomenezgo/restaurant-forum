@@ -2,18 +2,17 @@
   <div class="container py-5">
     <h1>餐廳描述頁</h1>
     <!-- 餐廳資訊頁 RestaurantDetail -->
-    <RestaurantDetail
-      :initial-restaurant="restaurant"
-      :restaurantComments="restaurantComments"
-    />
+    <RestaurantDetail :initial-restaurant="restaurant" />
     <hr />
     <!-- 餐廳評論 RestaurantComments -->
+    <RestaurantComments :restaurantComments="restaurantComments" />
     <!-- 新增評論 CreateComment -->
   </div>
 </template>
 
 <script>
 import RestaurantDetail from "../components/RestaurantDetail";
+import RestaurantComments from "../components/RestaurantComments";
 
 const dummyData = {
   restaurant: {
@@ -64,6 +63,7 @@ const dummyData = {
 export default {
   components: {
     RestaurantDetail,
+    RestaurantComments,
   },
   data() {
     return {

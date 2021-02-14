@@ -76,10 +76,6 @@ export default {
       type: Object,
       required: true,
     },
-    restaurantComments: {
-      type: Array,
-      required: true,
-    },
   },
   data() {
     return {
