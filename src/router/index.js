@@ -50,6 +50,16 @@ const routes = [
     component: () => import('../views/UsersTop.vue')
   },
   {
+    path: '/admin',
+    excat: true,
+    redirect: 'admin/restaurants'
+  },
+  {
+    path: '/admin/restaurants',
+    name: 'admin-restaurants',
+    component: () => import('../views/AdminRestaurants.vue')
+  },
+  {
     path: '*',
     name: 'not-found',
     component: NotFound,
