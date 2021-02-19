@@ -16,11 +16,22 @@
         <td>{{ restaurant.Category ? restaurant.Category.name : "未分類" }}</td>
         <td>{{ restaurant.name }}</td>
         <td class="d-flex justify-content-between">
-          <a href="#" class="btn btn-link">Show</a>
+          <router-link
+            :to="{ name: 'admin-restaurant', params: { id: restaurant.id } }"
+            class="btn btn-link"
+          >
+            Show
+          </router-link>
 
           <a href="#" class="btn btn-link">Edit</a>
 
-          <button type="button" class="btn btn-link">Delete</button>
+          <button
+            type="button"
+            @click.prevent.stop="deleteRestaurants(restaurant.id)"
+            class="btn btn-link"
+          >
+            Delete
+          </button>
         </td>
       </tr>
     </tbody>
@@ -688,6 +699,11 @@ export default {
   methods: {
     fetchRestaurants() {
       this.restaurants = dummyData.restaurants;
+    },
+    deleteRestaurants(restaurantId) {
+      this.restaurants = this.restaurants.filter(
+        (restaurant) => restaurant.id !== restaurantId
+      );
     },
   },
 };
