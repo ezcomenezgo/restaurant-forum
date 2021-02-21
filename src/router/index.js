@@ -4,6 +4,7 @@ import VueRouter from 'vue-router'
 import NotFound from '../views/NotFound.vue'
 import SignIn from '../views/SignIn.vue'
 import Restaurants from '../views/Restaurants.vue'
+// import { component } from 'vue/types/umd'
 
 Vue.use(VueRouter)
 
@@ -48,6 +49,11 @@ const routes = [
     path: '/restaurant/:id',
     name: 'restaurant',
     component: () => import('../views/Restaurant.vue')
+  },
+  {
+    path: '/users',
+    name: 'users',
+    component: () => import('../views/User.vue')
   },
   {
     path: '/users/top',
