@@ -47,7 +47,13 @@
               type="text"
               class="form-control"
             />
-            <span v-show="category.isEditing" class="cancel"> ✕ </span>
+            <span
+              v-show="category.isEditing"
+              class="cancel"
+              @click="handleCancel(category.id)"
+            >
+              ✕
+            </span>
           </td>
           <td class="d-flex justify-content-between">
             <button
@@ -62,6 +68,9 @@
               v-show="category.isEditing"
               type="button"
               class="btn btn-link mr-2"
+              @click.prevent.stop="
+                updateCategory({ categoryId: category.id, name: category.name })
+              "
             >
               Save
             </button>
@@ -135,6 +144,7 @@ export default {
       this.categories = dummyData.categories.map((category) => ({
         ...category,
         isEditing: false,
+        nameCached: "",
       }));
     },
     createCategory() {
@@ -158,12 +168,34 @@ export default {
           return {
             ...category,
             isEditing: !category.isEditing, //為甚麼不能直接用isEditing?前面還要加category
-            nameCached: category.name, // What's it?
+            nameCached: category.name,
           };
         }
 
         return category;
       });
+    },
+
+    /* eslint-disable */
+    updateCategory({ categoryId, name }) {
+      // TODO: 透過API去向伺服器更新餐廳類別名稱
+      this.toggleIsEditing(categoryId);
+    },
+    handleCancel(categoryId) {
+      this.categories = this.categories.map((category) => {
+        if (category.id === categoryId) {
+          return {
+            ...category,
+
+            // 把原本的餐廳類別名稱還回去
+            name: category.nameCached,
+          };
+        }
+
+        return category;
+      });
+
+      this.toggleIsEditing(categoryId);
     },
   },
 };
