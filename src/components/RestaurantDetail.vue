@@ -31,7 +31,14 @@
     </div>
     <div class="col-lg-8">
       <p>{{ showRestaurant.description }}</p>
-      <a class="btn btn-primary btn-border mr-2" href="#">Dashboard</a>
+      <router-link
+        class="btn btn-primary btn-border mr-2"
+        :to="{
+          name: 'restaurant-dashboard',
+          params: { id: showRestaurant.id },
+        }"
+        >Dashboard</router-link
+      >
 
       <button
         type="button"
