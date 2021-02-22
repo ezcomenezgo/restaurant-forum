@@ -2,23 +2,23 @@
   <div class="container">
     <div class="card mb-3">
       <!-- user's profile -->
-      <UserProfileCard :initial-user="user" :isCurrentUser="currentUser" />
+      <UserProfileCard :initial-user="profile" :isCurrentUser="currentUser" />
     </div>
     <div class="row">
       <div class="col-md-4">
         <!-- user's followings -->
-        <UserFollowingsCard :followings="user.profile.Followings" />
+        <UserFollowingsCard :followings="Followings" />
 
         <!-- user's followers -->
-        <UserFollowersCard :followers="user.profile.Followers" />
+        <UserFollowersCard :followers="Followers" />
       </div>
       <div class="col-md-8">
         <!-- user's comments card -->
-        <UserCommentsCard :userComments="user.profile.Comments" />
+        <UserCommentsCard :userComments="Comments" />
 
         <!-- user's favorite restaurant card -->
         <UserFavoritedRestaurantCard
-          :userFavoritedRestaurant="user.profile.FavoritedRestaurants"
+          :userFavoritedRestaurant="FavoritedRestaurants"
         />
       </div>
     </div>
@@ -1321,10 +1321,11 @@ export default {
 
   data() {
     return {
-      user: {
-        profile: [],
-        isFollowed: "",
-      },
+      profile: "",
+      Comments: [],
+      FavoritedRestaurants: [],
+      Followers: [],
+      Followings: [],
       currentUser: dummyUser.isAuthenticated,
     };
   },
@@ -1333,8 +1334,14 @@ export default {
   },
   methods: {
     fetchUser() {
-      this.user.profile = dummyData.profile;
-      this.user.isFollowed = dummyData.isFollowed;
+      const { profile, isFollowed } = dummyData;
+      const { Comments, FavoritedRestaurants, Followers, Followings } = profile;
+      this.profile = profile;
+      this.isFollowed = isFollowed;
+      this.Comments = Comments;
+      this.FavoritedRestaurants = FavoritedRestaurants;
+      this.Followers = Followers;
+      this.Followings = Followings;
     },
   },
 };

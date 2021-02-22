@@ -9,23 +9,21 @@
     </div>
     <div class="col-md-8">
       <div class="card-body">
-        <h5 class="card-title">{{ user.profile.name }}</h5>
-        <p class="card-text">{{ user.profile.email }}</p>
+        <h5 class="card-title">{{ user.name }}</h5>
+        <p class="card-text">{{ user.email }}</p>
         <ul class="list-unstyled list-inline">
           <li>
-            <strong>{{ user.profile.Comments.length }}</strong> 已評論餐廳
+            <strong>{{ user.Comments.length }}</strong> 已評論餐廳
           </li>
           <li>
-            <strong>{{ user.profile.FavoritedRestaurants.length }}</strong>
+            <strong>{{ user.FavoritedRestaurants.length }}</strong>
             收藏的餐廳
           </li>
           <li>
-            <strong>{{ user.profile.Followings.length }}</strong> followings
-            (追蹤者)
+            <strong>{{ user.Followings.length }}</strong> followings (追蹤者)
           </li>
           <li>
-            <strong>{{ user.profile.Followers.length }}</strong> followers
-            (追隨者)
+            <strong>{{ user.Followers.length }}</strong> followers (追隨者)
           </li>
         </ul>
         <template v-if="currentUser">
