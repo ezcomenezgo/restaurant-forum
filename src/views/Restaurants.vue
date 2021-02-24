@@ -54,11 +54,17 @@ export default {
   },
   created() {
     // 串接API step3 在 created 的時候呼叫 fetchRestaurant 方法
-    // 這裡會向伺服器請求第一頁且不分餐廳類別的資料
+    const { page = '', categoryId = '' } = this.$route.query
     this.fetchRestaurant({
-      queryPage: "",
-      queryCategoryId: "",
+      queryPage: page,
+      queryCategoryId: categoryId
     });
+  },
+  // 使用beforeRouterUpdate方法取得使用者路由變化
+  beforeRouteUpdate(to, from, next) {
+    const { page='', categoryId = '' } = to.query
+    this.fetchRestaurant({ queryPage: page, queryCategoryId: categoryId })
+    next()
   },
   methods: {
     // 串接API step2. 將fetchRestaurant改成async...await語法
@@ -70,7 +76,7 @@ export default {
           page: queryPage,
           categoryId: queryCategoryId,
         });
-        console.log("response", response);
+        
         const {
           restaurants,
           categories,
@@ -80,6 +86,7 @@ export default {
           prev,
           next,
         } = response.data;
+
         this.restaurants = restaurants;
         this.categories = categories;
         this.categoryId = categoryId;
