@@ -34,7 +34,11 @@
         />
       </div>
 
-      <button class="btn btn-lg btn-primary btn-block mb-3" type="submit">
+      <button
+        class="btn btn-lg btn-primary btn-block mb-3"
+        type="submit"
+        :disabled="isProcessing"
+      >
         Submit
       </button>
 
@@ -50,32 +54,58 @@
 </template>
 
 <script>
-import authorizationAPI from "../apis/authorization";
+import authorizationAPI from '../apis/authorization';
+import { Toast } from '../utils/helper';
 
 export default {
   data() {
     return {
-      email: "",
-      password: "",
+      email: '',
+      password: '',
+      isProcessing: false,
     };
   },
   methods: {
-    handleSubmit() {
-      // TODO: 向後端驗證使用者登入資訊是否合法
-      authorizationAPI
-        .signIn({
+    async handleSubmit() {
+      try {
+        // 如果email或password為空，則使用Toast提示
+        // 然後return不繼續往後執行
+        if (!this.email || !this.password) {
+          Toast.fire({
+            icon: 'warning',
+            title: '請填入email和password',
+          });
+          return;
+        }
+
+        this.isProcessing = true;
+
+        // TODO: 向後端驗證使用者登入資訊是否合法
+        const response = await authorizationAPI.signIn({
           email: this.email,
           password: this.password,
-        })
-        .then((response) => {
-          // 取得API請求後的資料
-          const { data } = response;
-          // 將token存在localStorage裡面
-          localStorage.setItem("token", data.token);
-
-          // 成功登入後轉只到餐廳首頁
-          this.$router.push("/restaurants");
         });
+        // 取得API請求後的資料
+        const { data } = response;
+        if (data.status !== 'success') {
+          throw new Error(data.message);
+        }
+        // 將token存在localStorage裡面
+        localStorage.setItem('token', data.token);
+
+        // 成功登入後轉只到餐廳首頁
+        this.$router.push('/restaurants');
+      } catch (error) {
+        // 將密碼欄位清空
+        this.password = '';
+        // 顯示錯誤提示
+        Toast.fire({
+          icon: 'warning',
+          title: '請確認您輸入了正確的帳號密碼',
+        });
+        this.isProcessing = false;
+        console.log('error', error);
+      }
     },
   },
 };
