@@ -7,5 +7,14 @@ export default {
     return apiHelper.get(`/restaurants?${searchParams.toString()}`, {
       headers: { Authorization: `Bearer ${getToken()}` }
     })
-  }
+  },
+  getRestaurantsTop() {
+    return apiHelper.get('/restaurants/top', {headers: { Authorization: `Bearer ${getToken()}` }})
+  },
+  // addFavorite({ restaurantId }) {
+  //   return apiHelper.post(`/favorite/${restaurantId}`, null, {headers: { Authorization: `Bearer ${getToken()}`}})
+  // },
+  // deleteFavorite({ restaurantId }) {
+  //   return apiHelper.delete(`/favorite/${restaurantId}`, {headers: { Authorization: `Bearer ${getToken()}`}})
+  // }
 }
