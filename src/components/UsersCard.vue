@@ -5,12 +5,12 @@
     </a>
     <h2>{{ user.name }}</h2>
     <span class="badge badge-secondary"
-      >追蹤人數：{{ user.Followers.length }}</span
+      >追蹤人數：{{ user.FollowerCount }}</span
     >
     <p class="mt-3">
       <button
         v-if="user.isFollowed"
-        @click.prevent.stop="unfollowed"
+        @click.prevent.stop="unfollowed(user.id)"
         type="button"
         class="btn btn-danger"
       >
@@ -18,7 +18,7 @@
       </button>
       <button
         v-else
-        @click.prevent.stop="followed"
+        @click.prevent.stop="followed(user.id)"
         type="button"
         class="btn btn-primary"
       >
@@ -29,6 +29,9 @@
 </template>
 
 <script>
+import usersAPI from "../apis/users"
+import Toast from "../utils/helper"
+
 export default {
   props: {
     initialUser: {
@@ -42,17 +45,49 @@ export default {
     };
   },
   methods: {
-    followed() {
-      this.user = {
-        ...this.user,
-        isFollowed: true,
-      };
+    async followed(userId) {
+      try {
+        const { data } = await usersAPI.addFollowing({ userId })
+        console.log(data)
+        if(data.status !== 'success'){
+          throw new Error(data.message)
+        }
+
+        this.user = {
+          ...this.user,
+          FollowerCount: this.user.FollowerCount + 1,
+          isFollowed: true,
+        };
+        console.log(this.user)
+      } catch(error) {
+        Toast.fire({
+          icon:'error',
+          title:'無法追蹤'
+        })
+      }
+      
     },
-    unfollowed() {
-      this.user = {
-        ...this.user,
-        isFollowed: false,
-      };
+    async unfollowed(userId) {
+      try {
+        const { data } = await usersAPI.deleteFollowing({ userId })
+        console.log(data)
+
+        if(data.status !== 'success'){
+          throw new Error(data.message)
+        }
+
+        this.user = {
+          ...this.user,
+          FollowerCount: this.user.FollowerCount - 1,
+          isFollowed: false,
+        };
+        console.log(this.user)
+      } catch {
+        Toast.fire({
+          icon:'error',
+          title:'無法退追'
+        })
+      }
     },
   },
 };
