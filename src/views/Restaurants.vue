@@ -31,8 +31,8 @@ import RestaurantCard from "../components/RestaurantCard";
 import RestaurantsNavPills from "../components/RestaurantsNavPills";
 import RestaurantPagination from "../components/RestaurantPagination";
 // 串接API step1. 透過import匯入剛剛寫好用來呼叫API的方法
-import restaurantAPI from '../apis/restaurants'
-
+import restaurantAPI from "../apis/restaurants";
+import { Toast } from "../utils/helper";
 
 export default {
   components: {
@@ -53,41 +53,47 @@ export default {
     };
   },
   created() {
-    // 串接API step3 在 created 的時候呼叫 fetchRestaurants 方法
+    // 串接API step3 在 created 的時候呼叫 fetchRestaurant 方法
     // 這裡會向伺服器請求第一頁且不分餐廳類別的資料
     this.fetchRestaurant({
-      page: 1,
-      categoryId: ''
+      queryPage: "",
+      queryCategoryId: "",
     });
   },
   methods: {
     // 串接API step2. 將fetchRestaurant改成async...await語法
     // 並且可以帶入參數page與CategoryId
     // 呼叫API後取得response
-    async fetchRestaurant() {
+    async fetchRestaurant({ queryPage, queryCategoryId }) {
       try {
-        const response = await restaurantAPI.getRestaurants({ page, categoryId })
-        console.log('reseponse', response)
-      } catch(error) {
-        console.log('error', error)
+        const response = await restaurantAPI.getRestaurants({
+          page: queryPage,
+          categoryId: queryCategoryId,
+        });
+        console.log("reseponse", response);
+        // const {
+        //   restaurants,
+        //   categories,
+        //   categoryId,
+        //   currentPage,
+        //   totalPage,
+        //   previousPage,
+        //   nextPage,
+        // } = response;
+        // this.restaurants = restaurants;
+        // this.categories = categories;
+        // this.categoryId = categoryId;
+        // this.currentPage = currentPage;
+        // this.totalPage = totalPage;
+        // this.previousPage = previousPage;
+        // this.nextPage = nextPage;
+      } catch (error) {
+        console.log("error", error);
+        Toast.fire({
+          icon: "error",
+          title: "無餐廳資料，請稍後再試",
+        });
       }
-      // const {
-      //   restaurants,
-      //   categories,
-      //   categoryId,
-      //   page,
-      //   totalPage,
-      //   prev,
-      //   next,
-      // } = dummyData;
-
-      // this.restaurants = restaurants;
-      // this.categories = categories;
-      // this.categoryId = categoryId;
-      // this.currentPage = page;
-      // this.totalPage = totalPage;
-      // this.previousPage = prev;
-      // this.nextPage = next;
     },
   },
 };
