@@ -70,23 +70,23 @@ export default {
           page: queryPage,
           categoryId: queryCategoryId,
         });
-        console.log("reseponse", response);
-        // const {
-        //   restaurants,
-        //   categories,
-        //   categoryId,
-        //   currentPage,
-        //   totalPage,
-        //   previousPage,
-        //   nextPage,
-        // } = response;
-        // this.restaurants = restaurants;
-        // this.categories = categories;
-        // this.categoryId = categoryId;
-        // this.currentPage = currentPage;
-        // this.totalPage = totalPage;
-        // this.previousPage = previousPage;
-        // this.nextPage = nextPage;
+        console.log("response", response);
+        const {
+          restaurants,
+          categories,
+          categoryId,
+          page,
+          totalPage,
+          prev,
+          next,
+        } = response.data;
+        this.restaurants = restaurants;
+        this.categories = categories;
+        this.categoryId = categoryId;
+        this.currentPage = page;
+        this.totalPage = totalPage;
+        this.previousPage = prev;
+        this.nextPage = next;
       } catch (error) {
         console.log("error", error);
         Toast.fire({
