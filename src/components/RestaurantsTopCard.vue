@@ -40,8 +40,8 @@
 </template>
 
 <script>
-import usersAPI from "../apis/users"
-import { Toast } from "../utils/helper"
+import usersAPI from "../apis/users";
+import { Toast } from "../utils/helper";
 
 export default {
   props: {
@@ -58,48 +58,45 @@ export default {
   methods: {
     async addFavorite(restaurantId) {
       try {
-        const { data } = usersAPI.addFavorite({ restaurantId })
-        console.log('data', data)
+        const { data } = await usersAPI.addFavorite({ restaurantId });
+        console.log("data", data);
 
-        if(data.status !== 'success') {
-          throw new Error (data.message)
+        if (data.status !== "success") {
+          throw new Error(data.message);
         }
 
         this.restaurant = {
           ...this.restaurant,
           isFavorited: true,
-          FavoriteCount: this.restaurant.FavoriteCount + 1
-
+          FavoriteCount: this.restaurant.FavoriteCount + 1,
         };
-      } catch(error) {
+      } catch (error) {
         Toast.fire({
-          icon: 'error',
-          title: '無法將餐廳加入最愛，請稍後再試'
-        })
+          icon: "error",
+          title: "無法將餐廳加入最愛，請稍後再試",
+        });
       }
-      
     },
     async deleteFavorite(restaurantId) {
       try {
-        const { data } = await usersAPI.deleteFavorite({ restaurantId })
-        console.log('data', data)
+        const { data } = await usersAPI.deleteFavorite({ restaurantId });
+        console.log("data", data);
 
-        if(data.status !== 'success') {
-          throw new Error (data.message)
+        if (data.status !== "success") {
+          throw new Error(data.message);
         }
 
         this.restaurant = {
           ...this.restaurant,
           isFavorited: false,
-          FavoriteCount: this.restaurant.FavoriteCount - 1
+          FavoriteCount: this.restaurant.FavoriteCount - 1,
         };
-      } catch(error) {
+      } catch (error) {
         Toast.fire({
-          icon: 'error',
-          title: '無法將餐廳移除最愛，請稍後再試'
-        })
+          icon: "error",
+          title: "無法將餐廳移除最愛，請稍後再試",
+        });
       }
-      
     },
   },
 };
