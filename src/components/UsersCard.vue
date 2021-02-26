@@ -29,8 +29,8 @@
 </template>
 
 <script>
-import usersAPI from "../apis/users"
-import Toast from "../utils/helper"
+import usersAPI from "../apis/users";
+import Toast from "../utils/helper";
 
 export default {
   props: {
@@ -47,10 +47,10 @@ export default {
   methods: {
     async followed(userId) {
       try {
-        const { data } = await usersAPI.addFollowing({ userId })
-        console.log(data)
-        if(data.status !== 'success'){
-          throw new Error(data.message)
+        const { data } = await usersAPI.addFollowing({ userId });
+
+        if (data.status !== "success") {
+          throw new Error(data.message);
         }
 
         this.user = {
@@ -58,22 +58,19 @@ export default {
           FollowerCount: this.user.FollowerCount + 1,
           isFollowed: true,
         };
-        console.log(this.user)
-      } catch(error) {
+      } catch (error) {
         Toast.fire({
-          icon:'error',
-          title:'無法追蹤'
-        })
+          icon: "error",
+          title: "無法追蹤",
+        });
       }
-      
     },
     async unfollowed(userId) {
       try {
-        const { data } = await usersAPI.deleteFollowing({ userId })
-        console.log(data)
+        const { data } = await usersAPI.deleteFollowing({ userId });
 
-        if(data.status !== 'success'){
-          throw new Error(data.message)
+        if (data.status !== "success") {
+          throw new Error(data.message);
         }
 
         this.user = {
@@ -81,12 +78,11 @@ export default {
           FollowerCount: this.user.FollowerCount - 1,
           isFollowed: false,
         };
-        console.log(this.user)
       } catch {
         Toast.fire({
-          icon:'error',
-          title:'無法退追'
-        })
+          icon: "error",
+          title: "無法退追",
+        });
       }
     },
   },
