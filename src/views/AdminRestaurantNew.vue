@@ -33,9 +33,6 @@ export default {
           throw new Error(data.message)
         }
         
-        // for (let [name, value] of formData.entries()) {
-        //   console.log(name + ":" + value);
-        // }
         // 串API step4 成功的話則轉址到'/admin/restaurants'
         this.$router.push({ name: 'admin-restaurants' })
       } catch(error) {
