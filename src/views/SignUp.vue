@@ -78,6 +78,9 @@
 </template>
 
 <script>
+import authorizationAPI from "../apis/authorization"
+import { Toast } from "../utils/helper"
+
 export default {
   data() {
     return {
@@ -85,19 +88,49 @@ export default {
       email: "",
       password: "",
       passwordCheck: "",
+      isProcessing: false
     };
   },
   methods: {
-    handleSubmit() {
-      const data = JSON.stringify({
-        name: this.name,
-        email: this.email,
-        password: this.password,
-        passwordCheck: this.passwordCheck,
-      });
+    async handleSubmit() {
+      try {
+        // 如果有任何欄位為空，則使用Toast提示
+        // 然後return不繼續往後執行
+        if (!this.email || !this.password || !this.password || !this.passwordCheck) {
+          Toast.fire({
+            icon: 'warning',
+            title: '請填寫完整',
+          });
+          return;
+        }
 
-      // TODO: 向後端驗證使用者登入資訊是否合法
-      console.log("data", data);
+        this.isProcessing = true
+
+        // TODO: 向後端驗證使用者登入資訊是否合法
+        const response = await authorizationAPI.signUp({
+          name: this.name,
+          email: this.email,
+          password: this.password,
+          passwordCheck: this.passwordCheck,
+        })
+        console.log(response)
+
+        // 取得API請求後的資料
+        const { data } = response;
+        console.log({ data })
+        if (data.status !== 'success') {
+          throw new Error(data.message);
+        }
+
+        // 成功註冊後轉只到餐廳首頁
+        this.$router.push('/restaurants');
+      } catch(error) {
+        this.isProcessing = false
+        Toast.fire({
+          icon: 'error',
+          title: '無法註冊帳號，請稍候再試'
+        })
+      }
     },
   },
 };
