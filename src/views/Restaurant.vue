@@ -11,72 +11,31 @@
     />
     <!-- 新增評論 CreateComment -->
     <CreateComments
-      :restaurant-id="restaurant.id"
+      :restaurant="restaurant"
       @after-create-comment="afterCreateComment"
     />
   </div>
 </template>
 
 <script>
-import RestaurantDetail from "../components/RestaurantDetail";
-import RestaurantComments from "../components/RestaurantComments";
-import CreateComments from "../components/CreateComment";
+import RestaurantDetail from '../components/RestaurantDetail';
+import RestaurantComments from '../components/RestaurantComments';
+import CreateComments from '../components/CreateComment';
+import restaurantsAPI from '../apis/restaurants';
+import { Toast } from '../utils/helper';
+// 用vuex拿登入者資料 step1 載入Vuex
+import { mapState } from 'vuex'
 
-const dummyData = {
-  restaurant: {
-    id: 1,
-    name: "Judy Runte",
-    tel: "(918) 827-1962",
-    address: "98138 Elisa Road",
-    opening_hours: "08:00",
-    description: "dicta et cupiditate",
-    image: "https://loremflickr.com/320/240/food,dessert,restaurant/?random=1",
-    createdAt: "2019-06-22T09:00:43.000Z",
-    updatedAt: "2019-06-22T09:00:43.000Z",
-    CategoryId: 3,
-    Category: {
-      id: 3,
-      name: "義大利料理",
-      createdAt: "2019-06-22T09:00:43.000Z",
-      updatedAt: "2019-06-22T09:00:43.000Z",
-    },
-    FavoritedUsers: [],
-    LikedUsers: [],
-    Comments: [
-      {
-        id: 3,
-        text: "Quos asperiores in nostrum cupiditate excepturi aspernatur.",
-        UserId: 2,
-        RestaurantId: 1,
-        createdAt: "2019-06-22T09:00:43.000Z",
-        updatedAt: "2019-06-22T09:00:43.000Z",
-        User: {
-          id: 2,
-          name: "user1",
-          email: "user1@example.com",
-          password:
-            "$2a$10$0ISHJI48xu/VRNVmEeycFe8v5ChyT305f8KaJVIhumu7M/eKAikkm",
-          image: "https://i.imgur.com/XooCt5K.png",
-          isAdmin: false,
-          createdAt: "2019-06-22T09:00:43.000Z",
-          updatedAt: "2019-06-23T01:16:31.000Z",
-        },
-      },
-    ],
-  },
-  isFavorited: false,
-  isLiked: false,
-};
-
-const dummyUser = {
-  currentUser: {
-    id: 1,
-    name: "管理者",
-    email: "root@example.com",
-    image: "https://i.pravatar.cc/300",
-    isAdmin: true,
-  },
-};
+// 用vuex拿登入者資料 step4 移除dummyUser資料
+// const dummyUser = {
+//   currentUser: {
+//     id: 1,
+//     name: '管理者',
+//     email: 'root@example.com',
+//     image: 'https://i.pravatar.cc/300',
+//     isAdmin: true,
+//   },
+// };
 
 export default {
   components: {
@@ -88,41 +47,58 @@ export default {
     return {
       restaurant: {
         id: -1,
-        name: "",
-        categoryName: "",
-        image: "",
-        openingHours: "",
-        tel: "",
-        address: "",
-        description: "",
+        name: '',
+        categoryName: '',
+        image: '',
+        openingHours: '',
+        tel: '',
+        address: '',
+        description: '',
         isFavorited: false,
         isLiked: false,
       },
       restaurantComments: [],
-      currentUser: dummyUser.currentUser,
+      // 用vuex拿登入者資料 step3 移除currentUser屬性
+      // currentUser: dummyUser.currentUser,
     };
   },
   created() {
     const { id: restaurantId } = this.$route.params;
     this.fetchRestaurant(restaurantId);
   },
+  beforeRouteUpdate(to, from, next) {
+    const { id: restaurantId } = to.params
+    this.fetchRestaurant(restaurantId)
+    next()
+  },
   methods: {
-    fetchRestaurant(restaurantId) {
-      console.log("fetchRestaurant id: ", restaurantId);
-      const { restaurant, isFavorited, isLiked } = dummyData;
-      this.restaurant = {
-        id: restaurant.id,
-        name: restaurant.name,
-        categoryName: restaurant.Category ? restaurant.Category.name : "未分類",
-        image: restaurant.image,
-        openingHours: restaurant.opening_hours,
-        tel: restaurant.tel,
-        address: restaurant.address,
-        description: restaurant.description,
-        isFavorited: isFavorited,
-        isLiked: isLiked,
-      };
-      this.restaurantComments = restaurant.Comments;
+    async fetchRestaurant(restaurantId) {
+      try {
+        const { data } = await restaurantsAPI.getRestaurant({restaurantId})
+        console.log('data: ', data);
+        const { restaurant, isFavorited, isLiked } = data;
+        this.restaurant = {
+          ...this.restaurant,
+          id: restaurant.id,
+          name: restaurant.name,
+          categoryName: restaurant.Category
+            ? restaurant.Category.name
+            : '未分類',
+          image: restaurant.image,
+          openingHours: restaurant.opening_hours,
+          tel: restaurant.tel,
+          address: restaurant.address,
+          description: restaurant.description,
+          isFavorited: isFavorited,
+          isLiked: isLiked,
+        };
+        this.restaurantComments = restaurant.Comments;
+      } catch (error) {
+        Toast.fire({
+          icon: 'error',
+          title: '無法取得餐廳資料，請稍候再試',
+        });
+      }
     },
     afterDeleteComment(commentId) {
       this.restaurantComments = this.restaurantComments.filter(
@@ -130,10 +106,14 @@ export default {
       );
     },
     afterCreateComment(payload) {
-      const { commentId, restaurantId, text } = payload;
+      const { commentId, restaurant, text } = payload;
+      console.log(payload)
       this.restaurantComments.push({
         id: commentId,
-        Restaurant: restaurantId,
+        Restaurant: {
+          id: restaurant.id,
+          name: restaurant.name
+        },
         User: {
           id: this.currentUser.id,
           name: this.currentUser.name,
@@ -143,5 +123,9 @@ export default {
       });
     },
   },
+  // 用vuex拿登入者資料 step2 從Vuex取得currentUser的資料
+  computed: {
+    ...mapState(['currentUser'])
+  }
 };
 </script>

@@ -89,6 +89,14 @@ export default {
       showRestaurant: this.initialRestaurant,
     };
   },
+  watch: {
+    initialRestaurant(newValue) {
+      this.showRestaurant = {
+        ...this.showRestaurant,
+        ...newValue
+      }
+    }
+  },
   methods: {
     addToFavorite() {
       console.log("addToFavorite");
