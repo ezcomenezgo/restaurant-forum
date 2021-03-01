@@ -42,8 +42,8 @@
 
       <button
         type="button"
-        v-if="showRestaurant.isFavorite"
-        @click.prevent.stop="deleteFavorite"
+        v-if="showRestaurant.isFavorited"
+        @click.prevent.stop="deleteFavorite(showRestaurant.id)"
         class="btn btn-danger btn-border mr-2"
       >
         移除最愛
@@ -51,7 +51,7 @@
       <button
         type="button"
         v-else
-        @click.prevent.stop="addToFavorite"
+        @click.prevent.stop="addToFavorite(showRestaurant.id)"
         class="btn btn-primary btn-border mr-2"
       >
         加到最愛
@@ -59,7 +59,7 @@
       <button
         type="button"
         v-if="showRestaurant.isLiked"
-        @click.prevent.stop="deleteLike"
+        @click.prevent.stop="deleteLike(showRestaurant.id)"
         class="btn btn-danger like mr-2"
       >
         Unlike
@@ -67,7 +67,7 @@
       <button
         type="button"
         v-else
-        @click.prevent.stop="addToLike"
+        @click.prevent.stop="addToLike(showRestaurant.id)"
         class="btn btn-primary like mr-2"
       >
         Like
@@ -77,6 +77,9 @@
 </template>
 
 <script>
+import usersAPI from '../apis/users';
+import { Toast } from '../utils/helper';
+
 export default {
   props: {
     initialRestaurant: {
@@ -93,36 +96,92 @@ export default {
     initialRestaurant(newValue) {
       this.showRestaurant = {
         ...this.showRestaurant,
-        ...newValue
-      }
-    }
+        ...newValue,
+      };
+    },
   },
   methods: {
-    addToFavorite() {
-      console.log("addToFavorite");
-      this.showRestaurant = {
-        ...this.showRestaurant,
-        isFavorite: true,
-      };
+    async addToFavorite(restaurantId) {
+      try {
+        const { data } = await usersAPI.addFavorite({ restaurantId });
+        console.log(data);
+
+        if (data.status !== 'success') {
+          throw new Error(data.message);
+        }
+
+        this.showRestaurant = {
+          ...this.showRestaurant,
+          isFavorited: true,
+        };
+      } catch (error) {
+        console.error(error.message);
+        Toast.fire({
+          icon: 'error',
+          title: '無法將餐廳加入最愛，請稍後再試',
+        });
+      }
     },
-    deleteFavorite() {
-      console.log("deleteFavorite");
-      this.showRestaurant = {
-        ...this.showRestaurant,
-        isFavorite: false,
-      };
+    async deleteFavorite(restaurantId) {
+      try {
+        const { data } = await usersAPI.deleteFavorite({ restaurantId });
+        console.log(data);
+
+        if (data.status !== 'success') {
+          throw new Error(data.message);
+        }
+
+        this.showRestaurant = {
+          ...this.showRestaurant,
+          isFavorited: false,
+        };
+      } catch (error) {
+        console.error(error.message);
+        Toast.fire({
+          icon: 'error',
+          title: '無法將餐廳加入最愛，請稍後再試',
+        });
+      } 
     },
-    addToLike() {
-      this.showRestaurant = {
-        ...this.showRestaurant,
-        isLiked: true,
-      };
+    async addToLike(restaurantId) {
+      try {
+        const { data } = await usersAPI.addLike({ restaurantId })
+
+        if (data.status !== 'success') {
+          throw new Error(data.message);
+        }
+
+        this.showRestaurant = {
+          ...this.showRestaurant,
+          isLiked: true,
+        };
+      } catch(error) {
+        console.error(error.message);
+        Toast.fire({
+          icon: 'error',
+          title: '無法將餐廳加入最愛，請稍後再試',
+        });
+      }
     },
-    deleteLike() {
-      this.showRestaurant = {
-        ...this.showRestaurant,
-        isLiked: false,
-      };
+    async deleteLike(restaurantId) {
+      try {
+        const { data } = await usersAPI.deleteLike({ restaurantId })
+
+        if (data.status !== 'success') {
+          throw new Error(data.message);
+        }
+
+        this.showRestaurant = {
+          ...this.showRestaurant,
+          isLiked: false,
+        };
+      } catch(error) {
+        console.error(error.message);
+        Toast.fire({
+          icon: 'error',
+          title: '無法將餐廳加入最愛，請稍後再試',
+        });
+      }
     },
   },
 };
