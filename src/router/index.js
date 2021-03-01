@@ -4,7 +4,7 @@ import VueRouter from 'vue-router'
 import NotFound from '../views/NotFound.vue'
 import SignIn from '../views/SignIn.vue'
 import Restaurants from '../views/Restaurants.vue'
-// import { component } from 'vue/types/umd'
+import store from '../store'
 
 Vue.use(VueRouter)
 
@@ -110,6 +110,12 @@ const routes = [
 const router = new VueRouter({
   linkExactActiveClass: 'active',
   routes
+})
+
+router.beforeEach((to, from, next) => {
+  // 使用dispatch呼叫Vuex內的actions
+  store.dispatch('fetchCurrentUser')
+  next()
 })
 
 export default router
