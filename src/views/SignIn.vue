@@ -85,6 +85,7 @@ export default {
           email: this.email,
           password: this.password,
         });
+        console.log('response', response)
         // 取得API請求後的資料
         const { data } = response;
         if (data.status !== 'success') {
@@ -92,6 +93,9 @@ export default {
         }
         // 將token存在localStorage裡面
         localStorage.setItem('token', data.token);
+
+        // 將資料傳到Vuex中
+        this.$store.commit('setCurrentUser', data.user)
 
         // 成功登入後轉只到餐廳首頁
         this.$router.push('/restaurants');
