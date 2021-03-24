@@ -1,6 +1,5 @@
 <template>
   <div class="container py-5">
-    <!-- 1. 使用先前寫好的 AdminNav -->
     <AdminNav />
 
     <form class="my-4">
@@ -17,6 +16,7 @@
           <button
             type="button"
             @click.prevent.stop="createCategory"
+            :disabled="isProcessing"
             class="btn btn-primary"
           >
             新增
@@ -90,77 +90,83 @@
 
 <script>
 import AdminNav from "@/components/AdminNav";
-import { v4 as uuidv4 } from "uuid";
-
-//  2. 定義暫時使用的資料
-const dummyData = {
-  categories: [
-    {
-      id: 1,
-      name: "中式料理",
-      createdAt: "2019-06-22T09:00:43.000Z",
-      updatedAt: "2019-06-22T09:00:43.000Z",
-    },
-    {
-      id: 2,
-      name: "日本料理",
-      createdAt: "2019-06-22T09:00:43.000Z",
-      updatedAt: "2019-06-22T09:00:43.000Z",
-    },
-    {
-      id: 3,
-      name: "義大利料理",
-      createdAt: "2019-06-22T09:00:43.000Z",
-      updatedAt: "2019-06-22T09:00:43.000Z",
-    },
-    {
-      id: 4,
-      name: "墨西哥料理",
-      createdAt: "2019-06-22T09:00:43.000Z",
-      updatedAt: "2019-06-22T09:00:43.000Z",
-    },
-  ],
-};
+import adminAPI from "../apis/admin";
+import { Toast } from "../utils/helper";
 
 export default {
   components: {
     AdminNav,
   },
-  // 3. 定義 Vue 中使用的 data 資料
   data() {
     return {
       categories: [],
       newCategoryName: "",
+      isProcessing: false,
     };
   },
-  // 5. 調用 `fetchCategories` 方法
   created() {
     this.fetchCategories();
   },
   methods: {
-    // 4. 定義 `fetchCategories` 方法，把 `dummyData` 帶入 Vue 物件
-    fetchCategories() {
-      // 在每個category都加入一個isEditing屬性
-      this.categories = dummyData.categories.map((category) => ({
-        ...category,
-        isEditing: false,
-        nameCached: "",
-      }));
+    async fetchCategories() {
+      try {
+        const { data } = await adminAPI.categories.get();
+        console.log(data);
+        // 在每個category都加入一個isEditing屬性
+        this.categories = data.categories.map((category) => ({
+          ...category,
+          isEditing: false,
+          nameCached: "",
+        }));
+      } catch (error) {
+        Toast.fire({
+          icon: "error",
+          title: "無法取得餐廳類別，請稍後再試",
+        });
+      }
     },
-    createCategory() {
+    async createCategory() {
       // TODO: 透過API告知伺服器欲新增的餐廳類別
+      try {
+        this.isProcessing = true;
 
-      // 將新的類別添加到陣列中
-      this.categories.push({
-        id: uuidv4(),
-        name: this.newCategoryName,
-      });
-      this.newCategoryName = ""; //清空內容
+        const response = await adminAPI.categories.create({
+          name: this.newCategoryName,
+        });
+
+        if (response.data.status !== "success") {
+          throw new Error(response.data.message);
+        }
+        console.log("create:", response);
+
+        this.categories.push({
+          name: this.newCategoryName,
+          id: response.data.categoryId,
+          isEditing: false,
+        });
+        this.newCategoryName = ""; //清空內容
+      } catch (error) {
+        this.isProcessing = false;
+        Toast.fire({
+          icon: "error",
+          title: "現在不能新增餐廳資料，請稍後再試",
+        });
+      }
     },
-    deleteCategory(categoryId) {
-      this.categories = this.categories.filter(
-        (category) => category.id !== categoryId
-      );
+    async deleteCategory(categoryId) {
+      try {
+        console.log({ categoryId })
+        const response = await adminAPI.categories.delete({ categoryId })
+        console.log(response)
+        this.categories = this.categories.filter(
+          (category) => category.id !== categoryId
+        );
+      } catch (error) {
+        Toast.fire({
+          icon: "error",
+          title: "現在無法刪除餐廳，請稍後再試",
+        });
+      }
     },
     toggleIsEditing(categoryId) {
       this.categories = this.categories.map((category) => {
@@ -177,9 +183,18 @@ export default {
     },
 
     /* eslint-disable */
-    updateCategory({ categoryId, name }) {
-      // TODO: 透過API去向伺服器更新餐廳類別名稱
-      this.toggleIsEditing(categoryId);
+    async updateCategory({ categoryId, name }) {
+      try {
+        // TODO: 透過API去向伺服器更新餐廳類別名稱
+        const response = await adminAPI.categories.update({ categoryId, name })
+        console.log('updateCategory:', response)
+        this.toggleIsEditing(categoryId);
+      } catch(error) {
+        Toast.fire({
+          icon: 'error',
+          title: '現在無法更新餐廳資料，請稍後再試'
+        })
+      }
     },
     handleCancel(categoryId) {
       this.categories = this.categories.map((category) => {
