@@ -7,7 +7,7 @@
           <router-link
             :to="{ name: 'restaurant', params: { id: comment.Restaurant.id } }"
           >
-            {{ comment.Restaurant.name }}
+            {{ comment.Restaurant ? comment.Restaurant.name : '未填寫'}}
           </router-link>
         </h4>
         <p>{{ comment.text }}</p>

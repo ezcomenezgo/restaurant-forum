@@ -21,94 +21,43 @@
 </template>
 
 <script>
-const dummyData = {
-  restaurant: {
-    id: 10,
-    name: "Eulalia Schoen",
-    tel: "301.236.0532",
-    address: "5595 Golden Turnpike",
-    opening_hours: "08:00",
-    description:
-      "Aut sequi rerum ad ipsum ea et velit cumque. Qui dolorum recusandae sit voluptas.",
-    image:
-      "https://loremflickr.com/320/240/restaurant,food/?random=86.12063922584056",
-    viewCounts: 2,
-    createdAt: "2020-12-15T06:35:43.000Z",
-    updatedAt: "2021-01-09T16:19:05.000Z",
-    CategoryId: 4,
-    Category: {
-      id: 4,
-      name: "墨西哥料理",
-      createdAt: "2020-12-15T06:35:43.000Z",
-      updatedAt: "2020-12-15T06:35:43.000Z",
-    },
-    Comments: [
-      {
-        id: 10,
-        text: "Sed dolores labore quia quae explicabo alias.",
-        UserId: 2,
-        RestaurantId: 10,
-        createdAt: "2020-12-15T06:35:43.000Z",
-        updatedAt: "2020-12-15T06:35:43.000Z",
-        User: {
-          id: 2,
-          name: "user1",
-          email: "user1@example.com",
-          password:
-            "$2a$10$m11qLlDOol1b3XCa393Bwe.hW4mt/6DS.mUsgFtati5LW4BbX81EG",
-          isAdmin: false,
-          image: "https://i.imgur.com/PhcKzNf.jpeg",
-          createdAt: "2020-12-15T06:35:43.000Z",
-          updatedAt: "2021-01-15T17:07:09.000Z",
-        },
-      },
-      {
-        id: 60,
-        text: "Nam nihil odio eaque dolorem totam.",
-        UserId: 2,
-        RestaurantId: 10,
-        createdAt: "2020-12-15T06:35:43.000Z",
-        updatedAt: "2020-12-15T06:35:43.000Z",
-        User: {
-          id: 2,
-          name: "user1",
-          email: "user1@example.com",
-          password:
-            "$2a$10$m11qLlDOol1b3XCa393Bwe.hW4mt/6DS.mUsgFtati5LW4BbX81EG",
-          isAdmin: false,
-          image: "https://i.imgur.com/PhcKzNf.jpeg",
-          createdAt: "2020-12-15T06:35:43.000Z",
-          updatedAt: "2021-01-15T17:07:09.000Z",
-        },
-      },
-      {
-        id: 110,
-        text: "Fuga natus dolor officia aperiam quis alias.",
-        UserId: 1,
-        RestaurantId: 10,
-        createdAt: "2020-12-15T06:35:43.000Z",
-        updatedAt: "2020-12-15T06:35:43.000Z",
-        User: {
-          id: 1,
-          name: "roo00t",
-          email: "root@example.com",
-          password:
-            "$2a$10$jBS/Y4.hceDXkEC5y9ZGne81Y7i5wNwNcy6wAKjNdBykCzlEfWmLm",
-          isAdmin: true,
-          image: "https://i.imgur.com/3keAGHT.jpeg",
-          createdAt: "2020-12-15T06:35:43.000Z",
-          updatedAt: "2021-01-14T16:20:50.000Z",
-        },
-      },
-    ],
-  },
-};
+import restaurantsAPI from "../apis/restaurants"
+import { Toast } from "../utils/helper"
+
 
 export default {
   data() {
     return {
-      restaurant: dummyData.restaurant,
+      restaurant: '',
     };
   },
+  
+  created() {
+    const { id: restaurantId } = this.$route.params;
+    this.fetchDashboard(restaurantId)
+  },
+  // 會跑錯誤但是畫面還是出的來
+  // 錯誤訊息([Vue warn]: Error in render: "TypeError: Cannot read property 'name' of undefined")
+  methods: {
+    async fetchDashboard(restaurantId) {
+      try {
+        const { data } = await restaurantsAPI.getRestaurant({ restaurantId })
+        console.log("data: ",data)
+        this.restaurant = data.restaurant
+      } catch {
+        Toast.fire({
+          icon: 'error',
+          title: '無法取得Dashboard，請稍後再試'
+        })
+      }
+    }
+  },
+  // beforeRouteUpdate(to, from, next) {
+  //   // 路由改變時重新抓取資料
+  //   console.log('to', to)
+  //   const { id } = to.params
+  //   this.fetchDashboard(id)
+  //   next()
+  // },
 };
 </script>

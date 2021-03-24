@@ -27,17 +27,8 @@
 
 <script>
 import { fromNowFilter } from "../utils/mixins";
+import { mapState } from "vuex"
 
-const dummyUser = {
-  currentUser: {
-    id: 1,
-    name: "管理者",
-    email: "root@example.com",
-    image: "https://i.pravatar.cc/300",
-    isAdmin: true,
-  },
-  isAuthenticated: true,
-};
 
 export default {
   name: "restaurantComments",
@@ -48,11 +39,6 @@ export default {
       required: true,
     },
   },
-  data() {
-    return {
-      currentUser: dummyUser.currentUser,
-    };
-  },
   methods: {
     handleDeleteButtonClick(commentId) {
       console.log("handDeleteButtonClick", commentId);
@@ -61,5 +47,8 @@ export default {
       this.$emit("after-delete-comment", commentId);
     },
   },
+  computed: {
+    ...mapState(["currentUser"])
+  }
 };
 </script>

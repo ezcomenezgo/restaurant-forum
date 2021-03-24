@@ -15,31 +15,65 @@
 </template>
 
 <script>
-import { v4 as uuidv4 } from "uuid";
+import usersAPI from '../apis/users';
+import { Toast } from '../utils/helper';
+import { mapState } from "vuex"
 
 export default {
   props: {
-    restaurantId: {
-      type: Number,
+    restaurant: {
+      type: Object,
       required: true,
     },
   },
   data() {
     return {
-      text: "",
+      text: '',
     };
   },
   methods: {
-    handleSubmit() {
+    async handleSubmit() {
       // TODO: 向API發送POST請求
-      // 伺服器新增comment 成功後...
-      this.$emit("after-create-comment", {
-        commentId: uuidv4(), // 尚未串接API暫時使用隨機的id
-        restaurantId: this.restaurantId,
-        text: this.text,
-      });
-      this.text = ""; //清空表單內的資料
+      try {
+        if (!this.text) {
+          Toast.fire({
+            icon: 'warning',
+            title: '您尚未填寫任何回覆',
+          });
+        }
+        const { data } = await usersAPI.createComments({
+          Restaurant: {
+            id: this.restaurant.id,
+            name: this.restaurant.name
+          },
+          text: this.text,
+          User: {
+            id: this.currentUser.id,
+            name: this.currentUser.name,
+          },
+        });
+        console.log(data)
+        if (data.status !== 'success') {
+          throw new Error(data.message);
+        }
+
+        // 伺服器新增comment 成功後...
+        this.$emit('after-create-comment', {
+          commentId: data.commentId , // 尚未串接API暫時使用隨機的id
+          restaurant: this.restaurant,
+          text: this.text,
+        });
+        this.text = ''; //清空表單內的資料
+      } catch (error) {
+        Toast.fire({
+          icon: 'error',
+          title: '無法新增評論，請稍候再試',
+        });
+      }
     },
   },
+  computed: {
+    ...mapState( ['currentUser'])
+  }
 };
 </script>
