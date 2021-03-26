@@ -37,5 +37,8 @@ export default {
   },
   createComments({ formData }) {
     return apiHelper.post('comments', formData,  {headers: { Authorization: `Bearer ${getToken()}`}})
+  },
+  deleteComments({ commentId }) {
+    return apiHelper.delete(`/comments/${commentId}`, { headers: { Authorization: `Bearer ${getToken()}` } })
   }
 }
