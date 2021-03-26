@@ -26,17 +26,6 @@ import { Toast } from '../utils/helper';
 // 用vuex拿登入者資料 step1 載入Vuex
 import { mapState } from 'vuex'
 
-// 用vuex拿登入者資料 step4 移除dummyUser資料
-// const dummyUser = {
-//   currentUser: {
-//     id: 1,
-//     name: '管理者',
-//     email: 'root@example.com',
-//     image: 'https://i.pravatar.cc/300',
-//     isAdmin: true,
-//   },
-// };
-
 export default {
   components: {
     RestaurantDetail,
@@ -58,8 +47,6 @@ export default {
         isLiked: false,
       },
       restaurantComments: [],
-      // 用vuex拿登入者資料 step3 移除currentUser屬性
-      // currentUser: dummyUser.currentUser,
     };
   },
   created() {

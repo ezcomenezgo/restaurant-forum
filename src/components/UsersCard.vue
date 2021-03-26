@@ -30,7 +30,7 @@
 
 <script>
 import usersAPI from "../apis/users";
-import Toast from "../utils/helper";
+import { Toast } from "../utils/helper";
 
 export default {
   props: {
