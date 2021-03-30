@@ -1,15 +1,19 @@
 <template>
   <div class="container py-5">
+    <Spinner v-if="isLoading" />
+    <template v-else>
     <AdminRestaurantForm
       @after-submit="handleAfterSubmit"
       :initial-restaurant="restaurant"
       :is-processing="isProcessing"
     />
+    </template>
   </div>
 </template>
 
 <script>
 import AdminRestaurantForm from "./../components/AdminRestaurantForm.vue";
+import Spinner from "../components/Spinner"
 // STEP 1: 載入 adminAPI 和 Toast
 import adminAPI from './../apis/admin'
 import { Toast } from './../utils/helper'
@@ -18,6 +22,7 @@ import { Toast } from './../utils/helper'
 export default {
   components: {
     AdminRestaurantForm,
+    Spinner
   },
   data() {
     return {
@@ -31,7 +36,8 @@ export default {
         image: "",
         openingHours: "",
       },
-      isProcessing: false
+      isProcessing: false,
+      isLoading: true
     };
   },
   created() {
@@ -92,7 +98,9 @@ export default {
         image,
         openingHours,
       };
+      this.isLoading = false
       } catch(error) {
+        this.isLoading = false
         //  STEP 5: 錯誤處理
         Toast.fire({
           icon: 'error',

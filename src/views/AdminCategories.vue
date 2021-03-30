@@ -1,107 +1,115 @@
 <template>
   <div class="container py-5">
     <AdminNav />
-
-    <form class="my-4">
-      <div class="form-row">
-        <div class="col-auto">
-          <input
-            v-model="newCategoryName"
-            type="text"
-            class="form-control"
-            placeholder="新增餐廳類別..."
-          />
-        </div>
-        <div class="col-auto">
-          <button
-            type="button"
-            @click.prevent.stop="createCategory"
-            :disabled="isProcessing"
-            class="btn btn-primary"
-          >
-            新增
-          </button>
-        </div>
-      </div>
-    </form>
-    <table class="table">
-      <thead class="thead-dark">
-        <tr>
-          <th scope="col" width="60">#</th>
-          <th scope="col">Category Name</th>
-          <th scope="col" width="210">Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="category in categories" :key="category.id">
-          <th scope="row">
-            {{ category.id }}
-          </th>
-          <td class="position-relative">
-            <div v-show="!category.isEditing" class="category-name">
-              {{ category.name }}
-            </div>
+    <Spinner v-if="isLoading" />
+    <template v-else>
+      <form class="my-4">
+        <div class="form-row">
+          <div class="col-auto">
             <input
-              v-show="category.isEditing"
-              v-model="category.name"
+              v-model="newCategoryName"
               type="text"
               class="form-control"
+              placeholder="新增餐廳類別..."
             />
-            <span
-              v-show="category.isEditing"
-              class="cancel"
-              @click="handleCancel(category.id)"
-            >
-              ✕
-            </span>
-          </td>
-          <td class="d-flex justify-content-between">
-            <button
-              v-show="!category.isEditing"
-              type="button"
-              class="btn btn-link mr-2"
-              @click.stop.prevent="toggleIsEditing(category.id)"
-            >
-              Edit
-            </button>
-            <button
-              v-show="category.isEditing"
-              type="button"
-              class="btn btn-link mr-2"
-              @click.prevent.stop="
-                updateCategory({ categoryId: category.id, name: category.name })
-              "
-            >
-              Save
-            </button>
+          </div>
+          <div class="col-auto">
             <button
               type="button"
-              class="btn btn-link mr-2"
-              @click.stop.prevent="deleteCategory(category.id)"
+              @click.prevent.stop="createCategory"
+              :disabled="isProcessing"
+              class="btn btn-primary"
             >
-              Delete
+              新增
             </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+          </div>
+        </div>
+      </form>
+      <table class="table">
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col" width="60">#</th>
+            <th scope="col">Category Name</th>
+            <th scope="col" width="210">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="category in categories" :key="category.id">
+            <th scope="row">
+              {{ category.id }}
+            </th>
+            <td class="position-relative">
+              <div v-show="!category.isEditing" class="category-name">
+                {{ category.name }}
+              </div>
+              <input
+                v-show="category.isEditing"
+                v-model="category.name"
+                type="text"
+                class="form-control"
+              />
+              <span
+                v-show="category.isEditing"
+                class="cancel"
+                @click="handleCancel(category.id)"
+              >
+                ✕
+              </span>
+            </td>
+            <td class="d-flex justify-content-between">
+              <button
+                v-show="!category.isEditing"
+                type="button"
+                class="btn btn-link mr-2"
+                @click.stop.prevent="toggleIsEditing(category.id)"
+              >
+                Edit
+              </button>
+              <button
+                v-show="category.isEditing"
+                type="button"
+                class="btn btn-link mr-2"
+                @click.prevent.stop="
+                  updateCategory({
+                    categoryId: category.id,
+                    name: category.name,
+                  })
+                "
+              >
+                Save
+              </button>
+              <button
+                type="button"
+                class="btn btn-link mr-2"
+                @click.stop.prevent="deleteCategory(category.id)"
+              >
+                Delete
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </template>
   </div>
 </template>
 
 <script>
 import AdminNav from "@/components/AdminNav";
+import Spinner from "../components/Spinner";
 import adminAPI from "../apis/admin";
 import { Toast } from "../utils/helper";
 
 export default {
   components: {
     AdminNav,
+    Spinner,
   },
   data() {
     return {
       categories: [],
       newCategoryName: "",
       isProcessing: false,
+      isLoading: true,
     };
   },
   created() {
@@ -118,7 +126,9 @@ export default {
           isEditing: false,
           nameCached: "",
         }));
+        this.isLoading = false;
       } catch (error) {
+        this.isLoading = false;
         Toast.fire({
           icon: "error",
           title: "無法取得餐廳類別，請稍後再試",
@@ -155,9 +165,9 @@ export default {
     },
     async deleteCategory(categoryId) {
       try {
-        console.log({ categoryId })
-        const response = await adminAPI.categories.delete({ categoryId })
-        console.log(response)
+        console.log({ categoryId });
+        const response = await adminAPI.categories.delete({ categoryId });
+        console.log(response);
         this.categories = this.categories.filter(
           (category) => category.id !== categoryId
         );
@@ -186,14 +196,14 @@ export default {
     async updateCategory({ categoryId, name }) {
       try {
         // TODO: 透過API去向伺服器更新餐廳類別名稱
-        const response = await adminAPI.categories.update({ categoryId, name })
-        console.log('updateCategory:', response)
+        const response = await adminAPI.categories.update({ categoryId, name });
+        console.log("updateCategory:", response);
         this.toggleIsEditing(categoryId);
-      } catch(error) {
+      } catch (error) {
         Toast.fire({
-          icon: 'error',
-          title: '現在無法更新餐廳資料，請稍後再試'
-        })
+          icon: "error",
+          title: "現在無法更新餐廳資料，請稍後再試",
+        });
       }
     },
     handleCancel(categoryId) {
