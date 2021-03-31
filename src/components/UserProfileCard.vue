@@ -114,6 +114,9 @@ export default {
     initialIsFollowed(newValue) {
       this.isFollowed = newValue;
     },
+    isCurrentUser(newValue) {
+      this.currentUser = newValue
+    }
   },
   methods: {
     async deleteFollowing(userId) {
