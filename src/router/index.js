@@ -60,14 +60,14 @@ const routes = [
     component: () => import('../views/Restaurant.vue')
   },
   {
-    path: '/users',
-    name: 'users',
-    component: () => import('../views/User.vue')
-  },
-  {
     path: '/users/top',
     name: 'users-top',
     component: () => import('../views/UsersTop.vue')
+  },
+  {
+    path: '/users/:id',
+    name: 'users',
+    component: () => import('../views/User.vue')
   },
   {
     path: '/admin',
