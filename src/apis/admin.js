@@ -1,4 +1,5 @@
 import { apiHelper } from "../utils/helper"
+const getToken = () => localStorage.getItem('token')
 
 export default {
   categories: {
@@ -16,7 +17,7 @@ export default {
     }
   },
   restaurants: {
-    create ({ formData }) {
+    create({ formData }) {
       return apiHelper.post('/admin/restaurants', formData)
     },
     getDetail({ restaurantId }) {
@@ -31,6 +32,22 @@ export default {
     // 為何變數用解構賦值便可成功回傳status，但沒有雙花括就會回傳data資料
     deleteRestaurant({ restaurantId }) {
       return apiHelper.delete(`/admin/restaurants/${restaurantId}`)
+    }
+  },
+  users: {
+    get() {
+      return apiHelper.get('/admin/users', {
+        headers: { Authorization: `Bearer ${getToken()}` }
+      })
+    },
+    update({ userId, isAdmin }) {
+      return apiHelper.put(
+        `/admin/users/${userId}`,
+        { isAdmin },
+        {
+          headers: { Authorization: `Bearer ${getToken()}` }
+        }
+      )
     }
   }
 }
